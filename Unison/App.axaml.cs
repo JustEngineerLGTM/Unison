@@ -1,28 +1,31 @@
+using System.IO;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Markup.Xaml;
 using Unison.ViewModels;
 using Unison.Views;
+using Whisper.net.Ggml;
 
 namespace Unison;
 
-public partial class App : Application
+public class App : Application
 {
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override void OnFrameworkInitializationCompleted()
+    public override async void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
-            // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
+
+            await ModelDownloadAsync();
+
             desktop.MainWindow = new MainWindow
             {
                 DataContext = new MainViewModel()
@@ -30,6 +33,8 @@ public partial class App : Application
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
+            await ModelDownloadAsync();
+
             singleViewPlatform.MainView = new MainView
             {
                 DataContext = new MainViewModel()
@@ -39,6 +44,17 @@ public partial class App : Application
         base.OnFrameworkInitializationCompleted();
     }
 
+
+    private static async Task ModelDownloadAsync()
+    {
+        const string modelPath = "ggml-base.bin";
+        if (File.Exists(modelPath)) return;
+
+        await using var modelStream = await WhisperGgmlDownloader.Default.GetGgmlModelAsync(GgmlType.Base);
+        await using var fileWriter = File.OpenWrite(modelPath);
+        await modelStream.CopyToAsync(fileWriter);
+        
+    }
     private void DisableAvaloniaDataAnnotationValidation()
     {
         // Get an array of plugins to remove

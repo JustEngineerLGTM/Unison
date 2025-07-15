@@ -3,7 +3,9 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
-        <entry key="Unison/Views/MainView.axaml" value="Unison.Browser/Unison.Browser.csproj" />
+        <entry key="Unison/App.axaml" value="Unison.Desktop/Unison.Desktop.csproj" />
+        <entry key="Unison/Views/MainView.axaml" value="Unison.Desktop/Unison.Desktop.csproj" />
+        <entry key="Unison/Views/MainWindow.axaml" value="Unison.Desktop/Unison.Desktop.csproj" />
       </map>
     </option>
   </component>

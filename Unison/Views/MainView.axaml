@@ -3,14 +3,23 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Unison.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d"
+             d:DesignWidth="400"
+             d:DesignHeight="300"
              x:Class="Unison.Views.MainView"
              x:DataType="vm:MainViewModel">
-  <Design.DataContext>
-    <!-- This only sets the DataContext for the previewer in an IDE,
-         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-    <vm:MainViewModel />
-  </Design.DataContext>
 
-  <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <Grid RowDefinitions="Auto, *" Margin="12" RowSpacing="8" ColumnDefinitions="*,*">
+
+        <Button Grid.Column="0" Content="Старт" Command="{Binding StartCommand}" />
+        <Button Grid.Row="0" Grid.Column="1" Content="Стоп" Command="{Binding StopCommand}" />
+
+        <TextBox Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0"
+                 Text="{Binding RecognizedText, Mode=TwoWay}"
+                 AcceptsReturn="True"
+                 VerticalAlignment="Stretch"
+                 HorizontalAlignment="Stretch"
+                 Margin="0,8,0,0" />
+
+    </Grid>
 </UserControl>
