@@ -14,18 +14,11 @@
     <PackageVersion Include="Avalonia.iOS" Version="11.3.2" />
     <PackageVersion Include="Avalonia.Browser" Version="11.3.2" />
     <PackageVersion Include="Avalonia.Android" Version="11.3.2" />
-    <PackageVersion Include="Bufdio" Version="0.1.0" />
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageVersion Include="EchoSharp.NAudio" Version="0.1.0" />
-    <PackageVersion Include="EchoSharp.WebRtc.WebRtcVadSharp" Version="0.1.0" />
-    <PackageVersion Include="EchoSharp.Whisper.net" Version="0.1.0" />
     <PackageVersion Include="NAudio" Version="2.2.1" />
     <PackageVersion Include="ReactiveUI" Version="20.4.1" />
-    <PackageVersion Include="System.Speech" Version="10.0.0-preview.5.25277.114" />
-    <PackageVersion Include="WebRtcVadSharp" Version="1.3.2" />
-    <PackageVersion Include="Whisper.net" Version="1.8.1" />
-    <PackageVersion Include="Whisper.net.AllRuntimes" Version="1.8.1" />
-    <PackageVersion Include="Whisper.net.Runtime" Version="1.8.1" />
+    <PackageVersion Include="System.Speech" Version="10.0.0-preview.6.25358.103" />
+    <PackageVersion Include="Vosk" Version="0.3.38" />
     <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.15" />
   </ItemGroup>
 </Project>

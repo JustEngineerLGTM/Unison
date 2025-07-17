@@ -25,18 +25,11 @@
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Bufdio" />
         <PackageReference Include="CommunityToolkit.Mvvm"/>
-        <PackageReference Include="EchoSharp.NAudio" />
-        <PackageReference Include="EchoSharp.WebRtc.WebRtcVadSharp" />
-        <PackageReference Include="EchoSharp.Whisper.net" />
         <PackageReference Include="NAudio" />
         <PackageReference Include="ReactiveUI" />
         <PackageReference Include="System.Speech" />
-        <PackageReference Include="WebRtcVadSharp" />
-        <PackageReference Include="Whisper.net" />
-        <PackageReference Include="Whisper.net.AllRuntimes" />
-        <PackageReference Include="Whisper.net.Runtime" />
+        <PackageReference Include="Vosk" />
     </ItemGroup>
 
     <ItemGroup>

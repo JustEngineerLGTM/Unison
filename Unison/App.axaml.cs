@@ -1,13 +1,11 @@
-using System.IO;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
-using System.Linq;
-using System.Threading.Tasks;
 using Avalonia.Markup.Xaml;
+using System.Linq;
+using Unison.SpeechRecognitionService;
 using Unison.ViewModels;
 using Unison.Views;
-using Whisper.net.Ggml;
 
 namespace Unison;
 
@@ -18,50 +16,36 @@ public class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override async void OnFrameworkInitializationCompleted()
+    public override void OnFrameworkInitializationCompleted()
     {
+        var modelService = new ModelService();
+        var speechRecognizer = new SpeechRecognizer(); 
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             DisableAvaloniaDataAnnotationValidation();
-
-            await ModelDownloadAsync();
-
+            
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainViewModel()
+                DataContext = new MainViewModel(modelService, speechRecognizer)
             };
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
-            await ModelDownloadAsync();
-
             singleViewPlatform.MainView = new MainView
             {
-                DataContext = new MainViewModel()
+                DataContext = new MainViewModel(modelService, speechRecognizer)
             };
         }
 
         base.OnFrameworkInitializationCompleted();
     }
 
-
-    private static async Task ModelDownloadAsync()
-    {
-        const string modelPath = "ggml-base.bin";
-        if (File.Exists(modelPath)) return;
-
-        await using var modelStream = await WhisperGgmlDownloader.Default.GetGgmlModelAsync(GgmlType.Base);
-        await using var fileWriter = File.OpenWrite(modelPath);
-        await modelStream.CopyToAsync(fileWriter);
-        
-    }
     private void DisableAvaloniaDataAnnotationValidation()
     {
-        // Get an array of plugins to remove
         var dataValidationPluginsToRemove =
             BindingPlugins.DataValidators.OfType<DataAnnotationsValidationPlugin>().ToArray();
 
-        // remove each entry found
         foreach (var plugin in dataValidationPluginsToRemove)
         {
             BindingPlugins.DataValidators.Remove(plugin);

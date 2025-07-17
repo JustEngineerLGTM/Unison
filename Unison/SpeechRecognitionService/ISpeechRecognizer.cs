@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 namespace Unison.SpeechRecognitionService;
 
 public interface ISpeechRecognizer
 {
-    Task RecognitionStart();
+    event Action<string> OnTextRecognized;
+    Task RecognitionStart(string path);
     Task RecognitionStop();
 }

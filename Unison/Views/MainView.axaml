@@ -4,22 +4,36 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Unison.ViewModels"
              mc:Ignorable="d"
-             d:DesignWidth="400"
-             d:DesignHeight="300"
+             d:DesignWidth="600"
+             d:DesignHeight="500"
              x:Class="Unison.Views.MainView"
              x:DataType="vm:MainViewModel">
+    <Grid RowDefinitions="Auto,*,Auto,Auto" ColumnDefinitions="*" Margin="10">
 
-    <Grid RowDefinitions="Auto, *" Margin="12" RowSpacing="8" ColumnDefinitions="*,*">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8">
+            <Button Content="Загрузить список моделей" Command="{Binding LoadModelsCommand}" />
+            <Button Content="Старт" Command="{Binding StartCommand}" IsEnabled="{Binding SelectedModel.IsDownloaded}" />
+            <Button Content="Стоп" Command="{Binding StopCommand}" IsEnabled="{Binding SelectedModel.IsDownloaded}" />
+        </StackPanel>
 
-        <Button Grid.Column="0" Content="Старт" Command="{Binding StartCommand}" />
-        <Button Grid.Row="0" Grid.Column="1" Content="Стоп" Command="{Binding StopCommand}" />
-
-        <TextBox Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0"
-                 Text="{Binding RecognizedText, Mode=TwoWay}"
+        <ListBox Grid.Row="1" ItemsSource="{Binding Models}" SelectedItem="{Binding SelectedModel, Mode=TwoWay}" Margin="0,8,0,0">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:ModelEntry">
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8" Width="400">
+                        <TextBlock Grid.Column="0" Text="{Binding Info.Name}" VerticalAlignment="Center"/>
+                        <Button Grid.Column="1" Content="Скачать" Command="{Binding DownloadCommand}"/>
+                        <ProgressBar Grid.Column="2" Value="{Binding DownloadProgress}" Maximum="100" Width="100" Height="16" IsVisible="{Binding IsDownloading}"/>
+                        <TextBlock Grid.Column="3" Text="✔" FontSize="16" Foreground="Green" IsVisible="{Binding IsDownloaded}" VerticalAlignment="Center"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox> <TextBlock Grid.Row="2" Text="Распознанный текст:" Margin="0,12,0,4" />
+        <TextBox Grid.Row="3" Text="{Binding RecognizedText, Mode=OneWay}"
+                 IsReadOnly="True"
                  AcceptsReturn="True"
+                 TextWrapping="Wrap"
+                 Height="150"
                  VerticalAlignment="Stretch"
-                 HorizontalAlignment="Stretch"
-                 Margin="0,8,0,0" />
-
+                 HorizontalAlignment="Stretch" />
     </Grid>
 </UserControl>

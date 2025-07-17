@@ -1,54 +1,107 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Unison.SpeechRecognitionService;
+using Avalonia.Threading;
 
 namespace Unison.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
+    private readonly IModelService _modelService;
+    private readonly ISpeechRecognizer _speechRecognizer;
 
-    [ObservableProperty] private string _recognizedText = "";
+    [ObservableProperty]
+    private string _recognizedText = "";
 
-    public IRelayCommand StartCommand { get; }
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(StartCommand))]
+    [NotifyCanExecuteChangedFor(nameof(StopCommand))]
+    private ModelEntry? _selectedModel;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(StartCommand))]
+    [NotifyCanExecuteChangedFor(nameof(StopCommand))]
+    private bool _isRecognitionActive;
+
+    public ObservableCollection<ModelEntry> Models { get; } = new();
+
+    public IAsyncRelayCommand LoadModelsCommand { get; }
+    public IAsyncRelayCommand StartCommand { get; }
     public IAsyncRelayCommand StopCommand { get; }
 
-    public MainViewModel()
+    public MainViewModel(IModelService modelService, ISpeechRecognizer speechRecognizer)
     {
-        ISpeechRecognizer speechRecognizer = new SpeechRecognizer();
-        if (speechRecognizer == null)
-            throw new ArgumentNullException(nameof(speechRecognizer));
+        _modelService = modelService ?? throw new ArgumentNullException(nameof(modelService));
+        _speechRecognizer = speechRecognizer ?? throw new ArgumentNullException(nameof(speechRecognizer));
 
-        StartCommand = new RelayCommand(() =>
+        _speechRecognizer.OnTextRecognized += text =>
         {
-            Console.WriteLine("▶️ StartCommand вызван");
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                Dispatcher.UIThread.Post(() => RecognizedText += text + " "); 
+            }
+        };
 
+        LoadModelsCommand = new AsyncRelayCommand(async () =>
+        {
             try
             {
-                speechRecognizer.RecognitionStart();
-                Console.WriteLine("🎙️ Распознавание запущено");
+                Models.Clear();
+                var list = await _modelService.GetAvailableModelsAsync();
+                if (list == null) return;
+
+                foreach (var m in list)
+                {
+                    Models.Add(new ModelEntry(m, _modelService));
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("❌ Ошибка при запуске: " + ex.Message);
+                Console.WriteLine($"Ошибка при загрузке моделей: {ex.Message}");
             }
         });
 
-        StopCommand = new AsyncRelayCommand(async () =>
+        StartCommand = new AsyncRelayCommand(async () =>
         {
-            Console.WriteLine("⏹️ StopCommand вызван");
+            if (SelectedModel is not { IsDownloaded: true })
+                return;
 
             try
             {
-                await speechRecognizer.RecognitionStop();
-                Console.WriteLine("✅ Распознанный текст: " + _recognizedText);
+                var modelPath = Path.Combine("models", SelectedModel.Info.Name,SelectedModel.Info.Name);
+                await _speechRecognizer.RecognitionStart(modelPath);
+                IsRecognitionActive = true;
+                RecognizedText = "Распознавание начато...\n"; 
             }
             catch (Exception ex)
             {
-                Console.WriteLine("❌ Ошибка при остановке: " + ex.Message);
+                Console.WriteLine($"Ошибка при запуске распознавания: {ex.Message}");
+                RecognizedText = $"Ошибка: {ex.Message}\n";
+                IsRecognitionActive = false;
             }
-        });
+        }, () => SelectedModel is { IsDownloaded: true } && !IsRecognitionActive); 
+
+        StopCommand = new AsyncRelayCommand(
+            async () =>
+            {
+                try
+                {
+                    await _speechRecognizer.RecognitionStop();
+                    IsRecognitionActive = false;
+                    RecognizedText += "\nРаспознавание остановлено."; 
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Ошибка при остановке распознавания: {ex.Message}");
+                    RecognizedText += $"\nОшибка остановки: {ex.Message}";
+                }
+            },
+            () => IsRecognitionActive
+        );
+        
+        LoadModelsCommand.Execute(null);
     }
-
 }

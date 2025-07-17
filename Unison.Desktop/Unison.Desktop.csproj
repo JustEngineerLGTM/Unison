@@ -27,11 +27,6 @@
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="EchoSharp.Whisper.net" />
-        <PackageReference Include="WebRtcVadSharp" />
-        <PackageReference Include="Whisper.net" />
-        <PackageReference Include="Whisper.net.AllRuntimes" />
-        <PackageReference Include="Whisper.net.Runtime" />
     </ItemGroup>
 
     <ItemGroup>
