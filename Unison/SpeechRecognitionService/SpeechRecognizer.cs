@@ -14,12 +14,13 @@ public class SpeechRecognizer : ISpeechRecognizer
     public event Action<string>? OnTextRecognized;
 
     public Task RecognitionStart(string path)
-    {
+    {   
+        Vosk.Vosk.SetLogLevel(-1);
         _model = new Model(path);
         _recognizer = new VoskRecognizer(_model, 16000.0f);
         _recognizer.SetWords(true); 
         _recognizer.SetPartialWords(true);
-
+    
         _waveIn = new WaveInEvent
         {
             WaveFormat = new WaveFormat(rate: 16000, bits: 16, channels: 1)

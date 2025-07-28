@@ -37,7 +37,14 @@ public partial class ModelEntry : ObservableObject
     
     private async void InitializeStatusAsync()
     {
-        IsDownloaded = await _modelService.IsModelDownloadedAsync(Info.Name);
+        try
+        {
+            IsDownloaded = await _modelService.IsModelDownloadedAsync(Info.Name);
+        }
+        catch (Exception e)
+        {
+            throw; // TODO handle exception
+        }
     }
 
     private async Task DownloadModelAsync()

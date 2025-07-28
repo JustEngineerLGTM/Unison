@@ -15,7 +15,7 @@ public static class VoskResultParser
         }
         catch
         {
-  
+            
         }
 
         return string.Empty;
