@@ -1,2 +1,3 @@
 # Unison
-Speech to text app with translator possibility
+## WIP
+Speech to text app with translator possibility 
